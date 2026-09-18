@@ -1,0 +1,17 @@
+# Large dataset (96MB - dashboard uses precomputed_data.json, raw dataset not needed at runtime)
+DataCoSupplyChainDataset.csv
+
+# Python environment & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+.DS_Store
