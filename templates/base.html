@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }} — Late Delivery Risk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="{{ url_for('static', filename='js/chart.umd.js') }}"></script>
+</head>
+<body>
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <p>Delivery Risk</p>
+            <p>Analytics &amp; prediction</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link {{ 'active' if active == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="nav-link {{ 'active' if active == 'data_analysis' else '' }}" href="{{ url_for('data_analysis') }}">Data analysis</a>
+            <a class="nav-link {{ 'active' if active == 'model_performance' else '' }}" href="{{ url_for('model_performance') }}">Model performance</a>
+            <a class="nav-link {{ 'active' if active == 'explainability' else '' }}" href="{{ url_for('explainability') }}">Explainability</a>
+            <a class="nav-link {{ 'active' if active == 'prediction' else '' }}" href="{{ url_for('prediction') }}">Prediction</a>
+            <a class="nav-link {{ 'active' if active == 'dataset' else '' }}" href="{{ url_for('dataset_page') }}">Dataset</a>
+        </nav>
+        <div class="sidebar-footer">
+            <p>Predictions are statistical risk estimates based on historical order patterns, not guarantees.</p>
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="main-header">
+            <h1>{{ page_title }}</h1>
+        </header>
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

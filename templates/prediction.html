@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p class="dataset-note">Country and state names follow the source dataset's original format, which includes some Spanish-language entries.</p>
+
+<div class="form-grid">
+    <section>
+        <p class="section-title" style="border-bottom:1px solid var(--line); padding-bottom:10px;">Shipment details</p>
+
+        <div class="field-group">
+            <label for="shipping_mode">Shipping mode</label>
+            <p class="helper-note">How fast the order is being shipped — Standard is the slowest, Same Day is the fastest</p>
+            <select id="shipping_mode"></select>
+        </div>
+        <div class="field-group">
+            <label for="days_scheduled">Days for shipment (scheduled)</label>
+            <p class="helper-note">Number of days promised for delivery (typically 0–6 days; use 0 for Same Day)</p>
+            <input type="number" id="days_scheduled" value="4">
+        </div>
+        <div class="field-group">
+            <label for="order_region">Order region</label>
+            <p class="helper-note">The broad geographic region the order is being delivered to</p>
+            <select id="order_region"></select>
+        </div>
+        <div class="field-group">
+            <label for="order_country">Order country</label>
+            <p class="helper-note">Region and market are set automatically once a country is chosen</p>
+            <select id="order_country"></select>
+        </div>
+        <div class="field-group">
+            <label for="order_state">Order state</label>
+            <p class="helper-note">States populate based on the selected country</p>
+            <select id="order_state"></select>
+        </div>
+        <div class="field-group">
+            <label for="market">Market</label>
+            <p class="helper-note">Matches the selected region automatically</p>
+            <select id="market"></select>
+        </div>
+    </section>
+
+    <section>
+        <p class="section-title" style="border-bottom:1px solid var(--line); padding-bottom:10px;">Order &amp; customer details</p>
+
+        <div class="field-group">
+            <label for="category_name">Product category</label>
+            <p class="helper-note">The category of the product being ordered</p>
+            <select id="category_name"></select>
+        </div>
+        <div class="field-group">
+            <label for="customer_segment">Customer segment</label>
+            <p class="helper-note">Type of customer — Consumer (individual), Corporate, or Home Office</p>
+            <select id="customer_segment"></select>
+        </div>
+        <div class="field-group">
+            <label for="order_type">Payment type</label>
+            <p class="helper-note">How the order was paid for</p>
+            <select id="order_type"></select>
+        </div>
+        <div class="field-group">
+            <label for="order_qty">Order item quantity</label>
+            <p class="helper-note">Number of units in this order (typically 1–5)</p>
+            <input type="number" id="order_qty" value="1">
+        </div>
+        <div class="field-group">
+            <label for="sales">Sales ($)</label>
+            <p class="helper-note">Total sale value of this order</p>
+            <input type="number" id="sales" value="100" step="0.01">
+        </div>
+        <div class="field-group">
+            <label for="discount_rate">Discount rate</label>
+            <p class="helper-note">Value between 0 and 1 — e.g. 0.1 means a 10% discount</p>
+            <input type="number" id="discount_rate" value="0.1" step="0.01">
+        </div>
+        <div class="field-group">
+            <label for="product_price">Product price ($)</label>
+            <p class="helper-note">Original price of a single unit</p>
+            <input type="number" id="product_price" value="100" step="0.01">
+        </div>
+        <div class="field-group">
+            <label for="benefit_per_order">Benefit per order ($)</label>
+            <p class="helper-note">Estimated profit the company makes from this order</p>
+            <input type="number" id="benefit_per_order" value="20" step="0.01">
+        </div>
+    </section>
+</div>
+
+<div class="timing-panel">
+    <div class="timing-title">Order timing</div>
+    <div class="timing-grid">
+        <div class="field-group">
+            <label for="order_month">Order month (1–12)</label>
+            <p class="helper-note">1 = January ... 12 = December</p>
+            <input type="number" id="order_month" min="1" max="12" value="6">
+        </div>
+        <div class="field-group">
+            <label for="order_day_of_week">Day of week (0–6)</label>
+            <p class="helper-note">0 = Monday ... 6 = Sunday</p>
+            <input type="number" id="order_day_of_week" min="0" max="6" value="2">
+        </div>
+        <div class="field-group">
+            <label for="order_quarter">Quarter (1–4)</label>
+            <p class="helper-note">Should match the month (Jan–Mar=1, Apr–Jun=2, Jul–Sep=3, Oct–Dec=4)</p>
+            <input type="number" id="order_quarter" min="1" max="4" value="2">
+        </div>
+    </div>
+</div>
+
+<button class="btn-primary" style="width:100%; padding:12px;" onclick="predict()">Predict delivery risk</button>
+<p class="loading" id="loadingText">Calculating prediction and generating explanation…</p>
+
+<div id="result">
+    <div class="verdict" id="resultHeader"></div>
+    <div class="panel" id="explanationBox"></div>
+    <div class="panel panel-accent" id="suggestionsBox"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const dropdownFields = ['Shipping Mode', 'Order Region', 'Market', 'Category Name',
+                             'Customer Segment', 'Type', 'Order Country', 'Order State'];
+    const fieldIdMap = {
+        'Shipping Mode': 'shipping_mode', 'Order Region': 'order_region', 'Market': 'market',
+        'Category Name': 'category_name', 'Customer Segment': 'customer_segment', 'Type': 'order_type',
+        'Order Country': 'order_country', 'Order State': 'order_state'
+    };
+
+    fetch('/dropdown-options')
+        .then(res => res.json())
+        .then(data => {
+            dropdownFields.forEach(field => {
+                const select = document.getElementById(fieldIdMap[field]);
+                data[field].forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    select.appendChild(opt);
+                });
+            });
+            document.getElementById('shipping_mode').addEventListener('change', function() {
+                if (this.value === 'Same Day') {
+                    document.getElementById('days_scheduled').value = 0;
+                }
+            });
+        });
+
+    let countryMapping = {};
+    fetch('/country-mapping')
+        .then(res => res.json())
+        .then(data => { countryMapping = data; });
+
+    document.getElementById('order_country').addEventListener('change', function() {
+        const selectedCountry = this.value;
+        if (countryMapping.region_map[selectedCountry]) {
+            document.getElementById('order_region').value = countryMapping.region_map[selectedCountry];
+        }
+        if (countryMapping.market_map[selectedCountry]) {
+            document.getElementById('market').value = countryMapping.market_map[selectedCountry];
+        }
+        const stateSelect = document.getElementById('order_state');
+        stateSelect.innerHTML = '';
+        const validStates = countryMapping.states_map[selectedCountry] || [];
+        validStates.forEach(state => {
+            const opt = document.createElement('option');
+            opt.value = state;
+            opt.textContent = state;
+            stateSelect.appendChild(opt);
+        });
+    });
+
+    function predict() {
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('loadingText').style.display = 'block';
+
+        const payload = {
+            days_scheduled: document.getElementById('days_scheduled').value,
+            order_qty: document.getElementById('order_qty').value,
+            sales: document.getElementById('sales').value,
+            discount_rate: document.getElementById('discount_rate').value,
+            product_price: document.getElementById('product_price').value,
+            benefit_per_order: document.getElementById('benefit_per_order').value,
+            order_month: document.getElementById('order_month').value,
+            order_day_of_week: document.getElementById('order_day_of_week').value,
+            order_quarter: document.getElementById('order_quarter').value,
+            shipping_mode: document.getElementById('shipping_mode').value,
+            order_region: document.getElementById('order_region').value,
+            market: document.getElementById('market').value,
+            category_name: document.getElementById('category_name').value,
+            customer_segment: document.getElementById('customer_segment').value,
+            order_type: document.getElementById('order_type').value,
+            order_country: document.getElementById('order_country').value,
+            order_state: document.getElementById('order_state').value
+        };
+
+        fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loadingText').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+
+            const headerBox = document.getElementById('resultHeader');
+            if (data.prediction === 1) {
+                headerBox.className = 'verdict verdict-high';
+                headerBox.innerHTML = `
+                    <div>
+                        <span class="badge badge-risk">High risk</span>
+                        <div class="verdict-message">This shipment is likely to arrive late.</div>
+                    </div>
+                    <div class="verdict-metric">
+                        <span class="verdict-number">${data.probability}%</span>
+                        <span class="verdict-label">probability of delay</span>
+                    </div>`;
+            } else {
+                headerBox.className = 'verdict verdict-low';
+                headerBox.innerHTML = `
+                    <div>
+                        <span class="badge badge-safe">Low risk</span>
+                        <div class="verdict-message">This shipment is likely to arrive on time.</div>
+                    </div>
+                    <div class="verdict-metric">
+                        <span class="verdict-number">${data.probability}%</span>
+                        <span class="verdict-label">probability of delay</span>
+                    </div>`;
+            }
+
+            const explanationBox = document.getElementById('explanationBox');
+            const maxImpact = Math.max(...data.top_factors.map(f => Math.abs(f.impact)), 0.0001);
+            let factorsHtml = '<p class="section-title">Why this prediction</p>';
+            data.top_factors.forEach(f => {
+                const dir = f.direction === 'increased' ? 'up' : 'down';
+                const pct = Math.max(8, Math.round((Math.abs(f.impact) / maxImpact) * 100));
+                const dirLabel = f.direction === 'increased' ? 'Higher risk' : 'Lower risk';
+                factorsHtml += `
+                    <div class="factor-item">
+                        <div class="factor-row">
+                            <span class="factor-name">${f.feature}</span>
+                            <span class="factor-direction factor-${dir}">${dirLabel}</span>
+                        </div>
+                        <div class="factor-bar-track"><div class="factor-bar-fill factor-${dir}" style="width:${pct}%"></div></div>
+                    </div>`;
+            });
+            explanationBox.innerHTML = factorsHtml;
+
+            const suggestionsBox = document.getElementById('suggestionsBox');
+            let suggestionsHtml = '<p class="section-title">Suggestions to reduce delay risk</p><ul>';
+            data.suggestions.forEach(s => { suggestionsHtml += `<li>${s}</li>`; });
+            suggestionsHtml += '</ul>';
+            suggestionsBox.innerHTML = suggestionsHtml;
+        })
+        .catch(err => {
+            document.getElementById('loadingText').style.display = 'none';
+            alert('Error: ' + err);
+        });
+    }
+</script>
+{% endblock %}

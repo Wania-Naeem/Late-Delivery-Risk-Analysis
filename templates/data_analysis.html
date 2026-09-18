@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+    <p class="section-title">Distribution of Late Delivery Risk</p>
+    <p class="section-desc">Overall split of orders between on-time and late deliveries across the full dataset.</p>
+    <div class="panel"><div class="chart-wrap" style="height:260px;"><canvas id="lateDeliveryDistChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Late Delivery Risk by Shipping Mode</p>
+    <p class="section-desc">Faster shipping modes show counter-intuitively higher late counts in this dataset — likely a result of tighter scheduling margins leaving less room for error.</p>
+    <div class="panel"><div class="chart-wrap" style="height:280px;"><canvas id="shipModeChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Average Days for Real Shipping by Order Region</p>
+    <p class="section-desc">Average actual shipping duration by order region, sorted from slowest to fastest.</p>
+    <div class="panel"><div class="chart-wrap" style="height:340px;"><canvas id="regionChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Distribution of Order Profit Per Order</p>
+    <p class="section-desc">Histogram showing how profit per order is spread across the dataset, including negative-profit (loss-making) orders.</p>
+    <div class="panel"><div class="chart-wrap" style="height:280px;"><canvas id="profitDistChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Total Monthly Sales Over Time</p>
+    <p class="section-desc">Total sales value across the dataset's active date range, showing overall revenue trends over time.</p>
+    <div class="panel"><div class="chart-wrap" style="height:280px;"><canvas id="monthlyChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Top 10 Categories by Total Sales</p>
+    <p class="section-desc">A small number of categories account for a disproportionate share of total sales value.</p>
+    <div class="panel"><div class="chart-wrap" style="height:320px;"><canvas id="categoryChart"></canvas></div></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // @ts-nocheck
+    // 1. Distribution of Late Delivery Risk
+    const lateDeliveryDist = {{ eda.late_delivery_distribution | tojson }};
+    new Chart(document.getElementById('lateDeliveryDistChart'), {
+        type: 'bar',
+        data: { labels: lateDeliveryDist.labels, datasets: [{ label: 'Order count', data: lateDeliveryDist.values, backgroundColor: ['#3d7a5c', '#a8321a'], borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // 2. Late Delivery Risk by Shipping Mode (grouped: on-time vs late)
+    const shipData = {{ eda.late_delivery_by_shipping_mode | tojson }};
+    new Chart(document.getElementById('shipModeChart'), {
+        type: 'bar',
+        data: {
+            labels: shipData.labels,
+            datasets: [
+                { label: 'On Time', data: shipData.on_time, backgroundColor: '#1d4e6d', borderRadius: 4 },
+                { label: 'Late', data: shipData.late, backgroundColor: '#a8321a', borderRadius: 4 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // 3. Average Days for Real Shipping by Order Region
+    const regionData = {{ eda.avg_shipping_days_by_region | tojson }};
+    new Chart(document.getElementById('regionChart'), {
+        type: 'bar',
+        data: { labels: regionData.labels, datasets: [{ label: 'Avg. days for real shipping', data: regionData.values, backgroundColor: '#a8711a', borderRadius: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+
+    // 4. Distribution of Order Profit Per Order (histogram)
+    const profitDist = {{ eda.order_profit_distribution | tojson }};
+    new Chart(document.getElementById('profitDistChart'), {
+        type: 'bar',
+        data: {
+            labels: profitDist.bin_centers.map(v => v.toFixed(0)),
+            datasets: [{ label: 'Frequency', data: profitDist.counts, backgroundColor: '#4a90d9', borderRadius: 2, barPercentage: 1.0, categoryPercentage: 1.0 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { ticks: { maxTicksLimit: 12 }, title: { display: true, text: 'Order Profit Per Order ($)' } }, y: { beginAtZero: true, title: { display: true, text: 'Frequency' } } }
+        }
+    });
+
+    // 5. Total Monthly Sales Over Time
+    const monthlyData = {{ eda.monthly_sales | tojson }};
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: { labels: monthlyData.labels, datasets: [{ label: 'Total Sales ($)', data: monthlyData.values, borderColor: '#1d4e6d', backgroundColor: 'rgba(29,78,109,0.08)', fill: true, tension: 0.25, pointRadius: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 10 } } } }
+    });
+
+    // 6. Top 10 Categories by Total Sales
+    const categoryData = {{ eda.sales_by_category | tojson }};
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: { labels: categoryData.labels, datasets: [{ label: 'Total sales ($)', data: categoryData.values, backgroundColor: '#3d7a5c', borderRadius: 4 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+</script>
+{% endblock %}

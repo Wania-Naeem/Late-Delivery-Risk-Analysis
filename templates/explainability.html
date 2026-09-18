@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+    <p class="section-title">Global feature importance</p>
+    <p class="section-desc">How much each feature contributes to the final XGBoost model's decisions overall, across all training data. For the reasoning behind a single, specific order, see the per-prediction SHAP breakdown on the Prediction page.</p>
+    <div class="panel"><div class="chart-wrap" style="height:420px;"><canvas id="importanceChart"></canvas></div></div>
+</div>
+
+<div class="section">
+    <p class="section-title">Per-prediction explainability (SHAP)</p>
+    <p class="section-desc">Every prediction made on the Prediction page is explained individually using SHAP (SHapley Additive exPlanations). Rather than relying only on the global importances above, SHAP shows exactly which factors pushed that specific order's risk up or down — and only for the categories actually selected for that order, avoiding misleading "what if" comparisons.</p>
+    <p><a class="btn-primary" href="{{ url_for('prediction') }}">Run a prediction &rarr;</a></p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const imp = {{ feature_importance | tojson }};
+    new Chart(document.getElementById('importanceChart'), {
+        type: 'bar',
+        data: {
+            labels: imp.map(f => f.feature),
+            datasets: [{ data: imp.map(f => f.importance), backgroundColor: '#1d4e6d', borderRadius: 4 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+</script>
+{% endblock %}

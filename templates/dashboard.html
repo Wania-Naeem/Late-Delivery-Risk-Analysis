@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+    <p class="section-title">Dataset overview</p>
+    <p class="section-desc">Summary statistics for the cleaned supply chain order dataset used to train the delay-risk models.</p>
+    <div class="stat-grid">
+        <div class="stat-card accent-brand">
+            <p class="stat-label">Total orders</p>
+            <p class="stat-value">{{ "{:,}".format(overview.total_records) }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Features used</p>
+            <p class="stat-value">{{ overview.total_columns }}</p>
+            <p class="stat-sublabel">after cleaning &amp; encoding</p>
+        </div>
+        <div class="stat-card accent-risk">
+            <p class="stat-label">Late deliveries</p>
+            <p class="stat-value">{{ overview.target_distribution_pct['1'] }}%</p>
+            <p class="stat-sublabel">{{ "{:,}".format(overview.target_distribution['1']) }} of {{ "{:,}".format(overview.total_records) }} orders</p>
+        </div>
+        <div class="stat-card accent-safe">
+            <p class="stat-label">Missing values</p>
+            <p class="stat-value">{{ overview.missing_values_total }}</p>
+            <p class="stat-sublabel">in features used by the model</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <p class="section-title">Delivery outcome distribution</p>
+    <p class="section-desc">Late_delivery_risk is close to evenly split — {{ overview.target_distribution_pct['1'] }}% of recorded orders arrived late. This is why model quality is judged on precision and recall for both classes, not accuracy alone.</p>
+    <div class="panel" style="max-width:380px;">
+        <div class="chart-wrap" style="height:220px;">
+            <canvas id="targetChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <p class="section-title">Final model summary</p>
+    <p class="section-desc">Three models were compared on held-out test data. XGBoost was selected as the final model for its balance of accuracy and fast, reliable SHAP explainability.</p>
+    <div class="stat-grid">
+        <div class="stat-card accent-brand">
+            <p class="stat-label">Best model</p>
+            <p class="stat-value" style="font-size:18px;">{{ final_model.name }}</p>
+        </div>
+        <div class="stat-card accent-safe">
+            <p class="stat-label">Test accuracy</p>
+            <p class="stat-value">{{ final_model.accuracy }}%</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Recall (late orders)</p>
+            <p class="stat-value">{{ final_model.recall_1 }}%</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Test set size</p>
+            <p class="stat-value">{{ "{:,}".format(final_model.test_size) }}</p>
+        </div>
+    </div>
+    <p style="margin-top:16px;">
+        <a class="btn-primary" href="{{ url_for('prediction') }}">Try a live prediction &rarr;</a>
+    </p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    new Chart(document.getElementById('targetChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['On time', 'Late'],
+            datasets: [{
+                data: [{{ overview.target_distribution['0'] }}, {{ overview.target_distribution['1'] }}],
+                backgroundColor: ['#3d7a5c', '#b4472b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 12 } } } }
+        }
+    });
+</script>
+{% endblock %}

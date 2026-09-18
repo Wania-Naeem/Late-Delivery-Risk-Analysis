@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+    <p class="section-title">Model comparison</p>
+    <p class="section-desc">Random Forest, XGBoost, and LightGBM were trained on the same features and evaluated on an identical held-out test split.</p>
+    <div class="panel"><div class="chart-wrap" style="height:220px;"><canvas id="compareChart"></canvas></div></div>
+    <table class="data-table" style="margin-top:14px;">
+        <thead><tr><th>Model</th><th>Accuracy</th></tr></thead>
+        <tbody>
+        {% for m in model_comparison %}
+            <tr>
+                <td>{{ m.model }} {% if 'final' in m.model.lower() %}<span class="badge badge-brand">Selected</span>{% endif %}</td>
+                <td>{{ m.accuracy }}%</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <p class="section-title">Final model — {{ final_model.name }}</p>
+    <p class="section-desc">Precision, recall, and F1-score by class on the held-out test set of {{ "{:,}".format(final_model.test_size) }} orders.</p>
+    <table class="data-table">
+        <thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-safe">On time</span></td>
+                <td>{{ final_model.precision_0 }}%</td>
+                <td>{{ final_model.recall_0 }}%</td>
+                <td>{{ final_model.f1_0 }}%</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-risk">Late</span></td>
+                <td>{{ final_model.precision_1 }}%</td>
+                <td>{{ final_model.recall_1 }}%</td>
+                <td>{{ final_model.f1_1 }}%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <p class="section-title">Confusion matrix</p>
+    <p class="section-desc">Rows are actual outcomes, columns are predicted outcomes, on the test set.</p>
+    <table class="data-table" style="max-width:460px;">
+        <thead><tr><th></th><th>Predicted: on time</th><th>Predicted: late</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Actual: on time</strong></td><td>{{ "{:,}".format(final_model.confusion_matrix[0][0]) }}</td><td>{{ "{:,}".format(final_model.confusion_matrix[0][1]) }}</td></tr>
+            <tr><td><strong>Actual: late</strong></td><td>{{ "{:,}".format(final_model.confusion_matrix[1][0]) }}</td><td>{{ "{:,}".format(final_model.confusion_matrix[1][1]) }}</td></tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const comp = {{ model_comparison | tojson }};
+    new Chart(document.getElementById('compareChart'), {
+        type: 'bar',
+        data: {
+            labels: comp.map(m => m.model),
+            datasets: [{ data: comp.map(m => m.accuracy), backgroundColor: ['#8a97a8', '#1d4e6d', '#a8711a'], borderRadius: 4 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100 } } }
+    });
+</script>
+{% endblock %}

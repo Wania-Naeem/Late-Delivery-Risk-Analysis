@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section">
+    <p class="section-title">About the dataset</p>
+    <p class="section-desc">
+        This project uses the <strong>DataCo Smart Supply Chain Dataset</strong>, a real e-commerce order dataset covering
+        {{ "{:,}".format(overview.total_records) }} orders placed between {{ overview.date_range[0] }} and {{ overview.date_range[1] }}
+        across five global markets. It includes shipping details, order and customer information, product categories, and
+        order-level financials.
+    </p>
+    <div class="stat-grid">
+        <div class="stat-card accent-brand">
+            <p class="stat-label">Total orders</p>
+            <p class="stat-value">{{ "{:,}".format(overview.total_records) }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Features used</p>
+            <p class="stat-value">{{ overview.total_columns }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Date range</p>
+            <p class="stat-value" style="font-size:15px;">{{ overview.date_range[0] }} &ndash; {{ overview.date_range[1] }}</p>
+        </div>
+        <div class="stat-card accent-safe">
+            <p class="stat-label">Missing values</p>
+            <p class="stat-value">{{ overview.missing_values_total }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <p class="section-title">Features used by the model</p>
+    <p class="section-desc">
+        <code>Days for shipping (real)</code> and <code>Delivery Status</code> are deliberately excluded from the feature set —
+        they are only known after a delivery happens, and including them would leak the answer into the model.
+    </p>
+    <table class="data-table">
+        <thead><tr><th>Column</th><th>Type</th></tr></thead>
+        <tbody>
+        {% for col in dataset_columns %}
+            <tr>
+                <td>{{ col }}</td>
+                <td>
+                    {% if col == 'Late_delivery_risk' %}
+                        <span class="badge badge-risk">Target</span>
+                    {% elif col in ['Shipping Mode','Order Region','Market','Category Name','Customer Segment','Type','Order Country','Order State'] %}
+                        <span class="badge badge-amber">Categorical</span>
+                    {% else %}
+                        <span class="badge badge-brand">Numeric</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <p class="section-title">Source</p>
+    <p class="section-desc">
+        Kaggle: <a href="https://www.kaggle.com/datasets/shashwatwork/dataco-smart-supply-chain-for-big-data-analysis" target="_blank" style="color:var(--brand); text-decoration:underline;">DataCo Smart Supply Chain Dataset</a>.
+        Country and state names appear in the source dataset's original format, which includes some Spanish-language entries.
+    </p>
+</div>
+
+{% endblock %}

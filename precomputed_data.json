@@ -1,0 +1,473 @@
+{
+  "dataset_overview": {
+    "total_records": 180519,
+    "total_columns": 17,
+    "target_distribution": {
+      "0": 81542,
+      "1": 98977
+    },
+    "target_distribution_pct": {
+      "0": 45.17,
+      "1": 54.83
+    },
+    "missing_values_total": 0,
+    "date_range": [
+      "2015-01-01",
+      "2018-01-31"
+    ]
+  },
+  "model_comparison": [
+    {
+      "model": "Random Forest",
+      "accuracy": 69.3
+    },
+    {
+      "model": "XGBoost (final)",
+      "accuracy": 70.7
+    },
+    {
+      "model": "LightGBM",
+      "accuracy": 70.3
+    }
+  ],
+  "final_model": {
+    "name": "XGBoost",
+    "accuracy": 70.7,
+    "precision_0": 63.1,
+    "recall_0": 87.1,
+    "f1_0": 73.2,
+    "precision_1": 84.5,
+    "recall_1": 58.1,
+    "f1_1": 68.9,
+    "confusion_matrix": [
+      [
+        14197,
+        2111
+      ],
+      [
+        8286,
+        11510
+      ]
+    ],
+    "test_size": 36104
+  },
+  "eda": {
+    "late_delivery_distribution": {
+      "labels": [
+        "On Time",
+        "Late"
+      ],
+      "values": [
+        81542,
+        98977
+      ]
+    },
+    "late_delivery_by_shipping_mode": {
+      "labels": [
+        "First Class",
+        "Same Day",
+        "Second Class",
+        "Standard Class"
+      ],
+      "on_time": [
+        1301,
+        5283,
+        8229,
+        66729
+      ],
+      "late": [
+        26513,
+        4454,
+        26987,
+        41023
+      ]
+    },
+    "avg_shipping_days_by_region": {
+      "labels": [
+        "Central Africa",
+        "West Africa",
+        "Eastern Asia",
+        "East Africa",
+        "Central America",
+        "Caribbean",
+        "South America",
+        "West of USA ",
+        "Northern Europe",
+        "South Asia",
+        "East of USA",
+        "Eastern Europe",
+        "Western Europe",
+        "Southeast Asia",
+        "Oceania",
+        "South of  USA ",
+        "West Asia",
+        "North Africa",
+        "US Center ",
+        "Southern Africa",
+        "Southern Europe",
+        "Central Asia",
+        "Canada"
+      ],
+      "values": [
+        3.56,
+        3.53,
+        3.53,
+        3.51,
+        3.51,
+        3.51,
+        3.51,
+        3.5,
+        3.5,
+        3.5,
+        3.5,
+        3.5,
+        3.5,
+        3.5,
+        3.5,
+        3.49,
+        3.49,
+        3.48,
+        3.46,
+        3.45,
+        3.44,
+        3.42,
+        3.33
+      ]
+    },
+    "order_profit_distribution": {
+      "bin_edges": [
+        -4274.98,
+        -4171.24,
+        -4067.51,
+        -3963.77,
+        -3860.04,
+        -3756.3,
+        -3652.57,
+        -3548.83,
+        -3445.1,
+        -3341.36,
+        -3237.62,
+        -3133.89,
+        -3030.15,
+        -2926.42,
+        -2822.68,
+        -2718.95,
+        -2615.21,
+        -2511.47,
+        -2407.74,
+        -2304,
+        -2200.27,
+        -2096.53,
+        -1992.8,
+        -1889.06,
+        -1785.33,
+        -1681.59,
+        -1577.85,
+        -1474.12,
+        -1370.38,
+        -1266.65,
+        -1162.91,
+        -1059.18,
+        -955.44,
+        -851.71,
+        -747.97,
+        -644.23,
+        -540.5,
+        -436.76,
+        -333.03,
+        -229.29,
+        -125.56,
+        -21.82,
+        81.92,
+        185.65,
+        289.39,
+        393.12,
+        496.86,
+        600.59,
+        704.33,
+        808.06,
+        911.8
+      ],
+      "bin_centers": [
+        -4223.11,
+        -4119.38,
+        -4015.64,
+        -3911.91,
+        -3808.17,
+        -3704.43,
+        -3600.7,
+        -3496.96,
+        -3393.23,
+        -3289.49,
+        -3185.76,
+        -3082.02,
+        -2978.28,
+        -2874.55,
+        -2770.81,
+        -2667.08,
+        -2563.34,
+        -2459.61,
+        -2355.87,
+        -2252.14,
+        -2148.4,
+        -2044.66,
+        -1940.93,
+        -1837.19,
+        -1733.46,
+        -1629.72,
+        -1525.99,
+        -1422.25,
+        -1318.52,
+        -1214.78,
+        -1111.04,
+        -1007.31,
+        -903.57,
+        -799.84,
+        -696.1,
+        -592.37,
+        -488.63,
+        -384.9,
+        -281.16,
+        -177.42,
+        -73.69,
+        30.05,
+        133.78,
+        237.52,
+        341.25,
+        444.99,
+        548.73,
+        652.46,
+        756.2,
+        859.93
+      ],
+      "counts": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        0,
+        2,
+        4,
+        4,
+        1,
+        2,
+        2,
+        1,
+        0,
+        0,
+        1,
+        4,
+        9,
+        16,
+        52,
+        68,
+        107,
+        232,
+        461,
+        642,
+        909,
+        2515,
+        4856,
+        15012,
+        123977,
+        29947,
+        1409,
+        78,
+        78,
+        66,
+        47,
+        9,
+        2
+      ]
+    },
+    "monthly_sales": {
+      "labels": [
+        "2015-01",
+        "2015-02",
+        "2015-03",
+        "2015-04",
+        "2015-05",
+        "2015-06",
+        "2015-07",
+        "2015-08",
+        "2015-09",
+        "2015-10",
+        "2015-11",
+        "2015-12",
+        "2016-01",
+        "2016-02",
+        "2016-03",
+        "2016-04",
+        "2016-05",
+        "2016-06",
+        "2016-07",
+        "2016-08",
+        "2016-09",
+        "2016-10",
+        "2016-11",
+        "2016-12",
+        "2017-01",
+        "2017-02",
+        "2017-03",
+        "2017-04",
+        "2017-05",
+        "2017-06",
+        "2017-07",
+        "2017-08",
+        "2017-09",
+        "2017-10",
+        "2017-11",
+        "2017-12",
+        "2018-01"
+      ],
+      "values": [
+        1051590.08,
+        927009.9,
+        1051253.69,
+        1014463.28,
+        1050478.44,
+        1024006.17,
+        1038081.19,
+        1029494.69,
+        1018338.6,
+        1049154.27,
+        1029120.24,
+        1057840.88,
+        1046308.25,
+        968542.85,
+        1025853.12,
+        1001211.58,
+        1029400.2,
+        1003059.55,
+        1045715.62,
+        1048200.25,
+        1002397.04,
+        1048130.55,
+        1047590.14,
+        1037408.17,
+        1029698.02,
+        992534.9,
+        1048004.78,
+        1038321.62,
+        1105485.32,
+        1032086.49,
+        1104373.36,
+        1109337.17,
+        1143775.11,
+        1073994.17,
+        626914.38,
+        503910.82,
+        331650.12
+      ]
+    },
+    "sales_by_category": {
+      "labels": [
+        "Fishing",
+        "Cleats",
+        "Camping & Hiking",
+        "Cardio Equipment",
+        "Women's Apparel",
+        "Water Sports",
+        "Men's Footwear",
+        "Indoor/Outdoor Games",
+        "Shop By Sport",
+        "Computers"
+      ],
+      "values": [
+        6929653.69,
+        4431942.78,
+        4118425.57,
+        3694843.2,
+        3147800,
+        3113844.68,
+        2891757.66,
+        2888993.91,
+        1309522.04,
+        663000
+      ]
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "Scheduled shipping days",
+      "importance": 0.1562
+    },
+    {
+      "feature": "Type: TRANSFER",
+      "importance": 0.0206
+    },
+    {
+      "feature": "Order State: Nueva Jersey",
+      "importance": 0.0083
+    },
+    {
+      "feature": "Order State: Kentucky",
+      "importance": 0.0059
+    },
+    {
+      "feature": "Order State: Bolívar",
+      "importance": 0.0056
+    },
+    {
+      "feature": "Order State: Duarte",
+      "importance": 0.0056
+    },
+    {
+      "feature": "Order State: Piamonte",
+      "importance": 0.0052
+    },
+    {
+      "feature": "Order Country: Cuba",
+      "importance": 0.0051
+    },
+    {
+      "feature": "Order State: Hesse",
+      "importance": 0.0051
+    },
+    {
+      "feature": "Order State: Flanders Oriental",
+      "importance": 0.005
+    },
+    {
+      "feature": "Order State: Chiriquí",
+      "importance": 0.005
+    },
+    {
+      "feature": "Order State: Nueva Gales del Sur",
+      "importance": 0.005
+    }
+  ],
+  "dataset_columns": [
+    "Days for shipment (scheduled)",
+    "Shipping Mode",
+    "Order Region",
+    "Market",
+    "Category Name",
+    "Customer Segment",
+    "Order Item Quantity",
+    "Sales",
+    "Order Item Discount Rate",
+    "order_month",
+    "order_day_of_week",
+    "order_quarter",
+    "Type",
+    "Order Country",
+    "Order State",
+    "Product Price",
+    "Benefit per order",
+    "Late_delivery_risk"
+  ]
+}
