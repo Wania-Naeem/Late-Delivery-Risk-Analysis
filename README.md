@@ -1,4 +1,4 @@
-# 📦 Delivery Risk Analytics & Prediction Dashboard
+# Late Delivery Risk Analytics & Prediction Dashboard
 
 A multi-page analytics and machine learning web application that analyzes supply chain order data, compares predictive models, and predicts the risk of a shipment arriving late — with a full explanation of *why*, powered by SHAP.
 
