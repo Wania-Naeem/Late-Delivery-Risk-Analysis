@@ -4,11 +4,11 @@ A multi-page analytics and machine learning web application that analyzes supply
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 This project turns a supply-chain machine learning pipeline into a complete analytics dashboard, not just a single prediction form. It's built on the **DataCo Smart Supply Chain Dataset** (180,000+ real e-commerce orders) and covers everything from exploratory data analysis to model comparison to individual, explainable predictions.
 
-## ✨ Pages
+##  Pages
 
 | Page | What it shows |
 |---|---|
@@ -21,7 +21,7 @@ This project turns a supply-chain machine learning pipeline into a complete anal
 
 ---
 
-## 🧠 Machine Learning Approach
+##  Machine Learning Approach
 
 - **17 engineered features** covering shipment, order, customer, and date information
 - **No data leakage**: `Days for shipping (real)` and `Delivery Status` are excluded from training, since they are only known after a delivery happens
@@ -39,7 +39,7 @@ A geographic consistency check (Country → Region → Market → State) also ru
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -51,7 +51,7 @@ A geographic consistency check (Country → Region → Market → State) also ru
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 ├── Project_(supply_chain).ipynb    # Full ML pipeline: EDA → cleaning → feature engineering → model training
@@ -81,7 +81,7 @@ A geographic consistency check (Country → Region → Market → State) also ru
 
 ---
 
-## 🚀 Running Locally
+##  Running Locally
 
 ```bash
 pip install -r requirements.txt
@@ -90,7 +90,7 @@ python app.py
 
 Then open `http://127.0.0.1:5000` in your browser.
 
-## 🐳 Running with Docker
+##  Running with Docker
 
 ```bash
 docker build -t delivery-risk-dashboard .
@@ -99,7 +99,7 @@ docker run -p 7860:7860 delivery-risk-dashboard
 
 ---
 
-## ⚠️ Limitations
+##  Limitations
 
 - **70.7% accuracy** reflects a genuinely hard prediction problem — delivery delays depend on real-world factors (weather, traffic, staffing) not captured in this dataset. This is an honest, leakage-free number, not an inflated one.
 - Predictions are most reliable for **realistic input combinations** that reflect patterns present in the training data.
@@ -108,7 +108,7 @@ docker run -p 7860:7860 delivery-risk-dashboard
 
 ---
 
-## 👤 Author
+##  Author
 
 **Wania Naeem**
 GitHub: [github.com/Wania-Naeem](https://github.com/Wania-Naeem)
@@ -116,6 +116,6 @@ LinkedIn: [Add your LinkedIn URL here]
 
 ---
 
-## 📄 Data Source
+##  Data Source
 
 [DataCo Smart Supply Chain Dataset](https://www.kaggle.com/datasets/shashwatwork/dataco-smart-supply-chain-for-big-data-analysis) (Kaggle), used for educational purposes.
